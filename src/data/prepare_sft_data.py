@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import random
+import urllib.request
 from pathlib import Path
 
 from datasets import load_dataset
@@ -73,13 +74,17 @@ FINQA_URL = "https://raw.githubusercontent.com/czyssrs/FinQA/main/dataset/train.
 
 def load_finqa(limit: int) -> list[dict]:
     print("· Loading FinQA (official raw JSON) ...")
+    # Parse the raw JSON directly. The nested `qa` field mixes value types (e.g. answers
+    # like "yes"/"no" alongside numbers), which breaks pyarrow's schema inference in
+    # load_dataset("json", ...) on some pyarrow versions (notably on Colab).
     try:
-        ds = load_dataset("json", data_files=FINQA_URL, split="train")
+        with urllib.request.urlopen(FINQA_URL) as resp:
+            data = json.load(resp)
     except Exception as e:
         print(f"  ! skipped finqa ({e})")
         return []
     out = []
-    for row in ds:
+    for row in data:
         qa = row.get("qa") or {}
         question = _first(qa, "question") or _first(row, "question")
         answer = _first(qa, "answer", "exe_ans") or _first(row, "answer")

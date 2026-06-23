@@ -11,6 +11,9 @@ from dataclasses import dataclass
 
 from src.config_utils import load_config
 from src.data.prompts import SYSTEM_PROMPT
+from src.quiet import quiet, tame_generation
+
+quiet()
 
 
 @dataclass
@@ -34,6 +37,7 @@ class LLM:
             dtype=cfg.model.dtype,
         )
         FastLanguageModel.for_inference(self.model)
+        tame_generation(self.model)
         self.max_seq_length = cfg.model.max_seq_length
 
     def chat(self, messages: list[dict], max_new_tokens: int = 512) -> GenResult:

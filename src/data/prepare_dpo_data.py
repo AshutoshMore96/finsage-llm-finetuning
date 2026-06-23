@@ -23,6 +23,7 @@ from datasets import load_dataset
 
 from src.config_utils import abspath, load_config
 from src.data.prompts import build_messages, render_prompt
+from src.quiet import quiet, tame_generation
 
 
 def load_base_model(cfg):
@@ -36,10 +37,12 @@ def load_base_model(cfg):
         dtype=cfg.model.dtype,
     )
     FastLanguageModel.for_inference(model)
+    tame_generation(model)
     return model, tokenizer
 
 
 def main() -> None:
+    quiet()
     cfg = load_config()
     random.seed(cfg.data.seed)
     n = cfg.data.max_dpo_rows

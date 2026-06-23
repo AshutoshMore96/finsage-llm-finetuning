@@ -18,6 +18,7 @@ from datasets import load_dataset
 
 from src.config_utils import abspath, load_config
 from src.data.prompts import render_prompt
+from src.quiet import quiet, tame_generation
 
 
 def load_model(model_name_or_path, cfg):
@@ -30,6 +31,7 @@ def load_model(model_name_or_path, cfg):
         dtype=cfg.model.dtype,
     )
     FastLanguageModel.for_inference(model)
+    tame_generation(model)
     return model, tokenizer
 
 
@@ -70,6 +72,7 @@ def llm_judge(cfg, question, ref, ans_a, ans_b) -> str:
 
 
 def main() -> None:
+    quiet()
     cfg = load_config()
     n = cfg.data.max_eval_rows
 
