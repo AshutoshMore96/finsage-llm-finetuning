@@ -53,21 +53,58 @@ def rouge_l(pred: str, ref: str) -> float:
     return scorer.score(ref, pred)["rougeL"].fmeasure
 
 
+# Which env var holds each provider's API key
+_JUDGE_KEY_ENV = {
+    "groq": "GROQ_API_KEY",          # free  — console.groq.com
+    "gemini": "GOOGLE_API_KEY",      # free  — aistudio.google.com
+    "anthropic": "ANTHROPIC_API_KEY",  # paid — console.anthropic.com
+}
+
+
+def judge_ready(cfg) -> bool:
+    """True only if the judge is enabled AND the chosen provider's key is set."""
+    if not cfg.eval.use_llm_judge:
+        return False
+    provider = getattr(cfg.eval, "judge_provider", "groq").lower()
+    return bool(os.getenv(_JUDGE_KEY_ENV.get(provider, "")))
+
+
 def llm_judge(cfg, question, ref, ans_a, ans_b) -> str:
-    """Return 'A', 'B', or 'tie'. A = base, B = fine-tuned."""
-    import anthropic
-    client = anthropic.Anthropic()
+    """Return 'A', 'B', or 'tie'. A = base, B = fine-tuned.
+
+    Provider is set by cfg.eval.judge_provider: 'groq' (free, default),
+    'gemini' (free), or 'anthropic' (paid).
+    """
+    provider = getattr(cfg.eval, "judge_provider", "groq").lower()
     prompt = (
         f"Question:\n{question}\n\nReference answer:\n{ref}\n\n"
         f"Assistant A:\n{ans_a}\n\nAssistant B:\n{ans_b}\n\n"
         "Which assistant answer is more accurate and helpful for this finance question? "
         "Reply with exactly one token: A, B, or tie."
     )
-    msg = client.messages.create(
-        model=cfg.eval.judge_model, max_tokens=5,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    verdict = msg.content[0].text.strip().upper()
+
+    if provider == "groq":
+        from groq import Groq
+        client = Groq()  # reads GROQ_API_KEY
+        resp = client.chat.completions.create(
+            model=cfg.eval.judge_model, max_tokens=5,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        verdict = resp.choices[0].message.content.strip().upper()
+    elif provider == "gemini":
+        import google.generativeai as genai
+        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+        model = genai.GenerativeModel(cfg.eval.judge_model)
+        verdict = model.generate_content(prompt).text.strip().upper()
+    else:  # anthropic (paid)
+        import anthropic
+        client = anthropic.Anthropic()
+        msg = client.messages.create(
+            model=cfg.eval.judge_model, max_tokens=5,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        verdict = msg.content[0].text.strip().upper()
+
     return "A" if "A" in verdict else "B" if "B" in verdict else "tie"
 
 
@@ -86,6 +123,10 @@ def main() -> None:
     base_rouge, ft_rouge = [], []
     wins = {"base": 0, "ft": 0, "tie": 0}
     rows_md = []
+    judge_on = judge_ready(cfg)
+    if cfg.eval.use_llm_judge and not judge_on:
+        print(f"! LLM-judge enabled but no API key for provider "
+              f"'{getattr(cfg.eval, 'judge_provider', 'groq')}' — skipping judge.")
 
     for i, r in enumerate(rows):
         q = str(r.get("question", "")).strip()
@@ -101,7 +142,7 @@ def main() -> None:
         base_rouge.append(rouge_l(base_ans, gold))
         ft_rouge.append(rouge_l(ft_ans, gold))
 
-        if cfg.eval.use_llm_judge and os.getenv("ANTHROPIC_API_KEY"):
+        if judge_on:
             v = llm_judge(cfg, q, gold, base_ans, ft_ans)
             wins["base" if v == "A" else "ft" if v == "B" else "tie"] += 1
 
