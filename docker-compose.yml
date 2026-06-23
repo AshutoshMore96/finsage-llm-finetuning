@@ -1,0 +1,12 @@
+services:
+  finsage-api:
+    build: .
+    image: finsage-api:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      # mount the GGUF model from the host (not baked into the image)
+      - ./models:/app/models:ro
+    environment:
+      - FINSAGE_GGUF=/app/models/finsage-merged-16bit-gguf/finsage.Q4_K_M.gguf
+    restart: unless-stopped

@@ -1,0 +1,41 @@
+# ============================================================
+# Training / cloud GPU deps (Colab / Kaggle T4 — CUDA required)
+# Install on the GPU box, NOT the Mac.
+#   pip install -r requirements.txt
+# ============================================================
+
+# Fast QLoRA + DPO on a single GPU. unsloth pins compatible
+# transformers/peft/trl/bitsandbytes versions for you.
+unsloth
+unsloth_zoo
+
+# Core HF stack (unsloth will align exact versions)
+transformers>=4.46.0
+datasets>=3.0.0
+trl>=0.12.0
+peft>=0.13.0
+accelerate>=1.0.0
+bitsandbytes>=0.44.0
+
+# Data / eval / serving
+pyyaml>=6.0
+rouge-score>=0.1.2
+sentencepiece>=0.2.0
+gradio>=4.44.0
+
+# RAG baseline + comparison benchmark
+sentence-transformers>=3.0.0
+faiss-cpu>=1.8.0
+matplotlib>=3.8.0
+
+# Cloud API serving (CPU GGUF)
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+llama-cpp-python>=0.3.0
+
+# Tests
+pytest>=8.0
+
+# Optional: experiment tracking + LLM-as-judge
+wandb>=0.18.0
+anthropic>=0.40.0

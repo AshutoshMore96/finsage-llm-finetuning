@@ -1,0 +1,120 @@
+# ============================================================
+# FinSage — central configuration
+# Edit values here; every script reads from this file.
+# ============================================================
+
+project_name: finsage
+
+model:
+  # 3B default: trains on a free T4, runs locally on an 8GB M2 after quantization.
+  # Scale up by switching to: unsloth/Qwen2.5-7B-Instruct-bnb-4bit
+  name: unsloth/Qwen2.5-3B-Instruct-bnb-4bit
+  max_seq_length: 2048
+  load_in_4bit: true            # QLoRA (CUDA only — ignored on CPU/Mac)
+  dtype: null                   # null = auto (bf16 on Ampere+, fp16 on T4)
+
+# LoRA / QLoRA adapter config
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.0
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+  use_rslora: false
+
+data:
+  processed_dir: data/processed
+  sft_file: data/processed/sft_finance.jsonl
+  dpo_file: data/processed/dpo_finance.jsonl
+  eval_file: data/processed/eval_finance.jsonl
+  # cap rows so it trains fast on a free GPU; raise for better quality
+  max_sft_rows: 20000
+  max_dpo_rows: 3000
+  max_eval_rows: 300
+  val_split: 0.02
+  seed: 42
+
+sft:
+  output_dir: outputs/sft
+  epochs: 1
+  per_device_batch_size: 2
+  grad_accum: 4               # effective batch = 8
+  learning_rate: 2.0e-4
+  warmup_ratio: 0.03
+  weight_decay: 0.01
+  lr_scheduler: cosine
+  logging_steps: 10
+  save_steps: 200
+  train_on_responses_only: true   # mask the prompt, learn only the answer
+
+dpo:
+  output_dir: outputs/dpo
+  epochs: 1
+  per_device_batch_size: 1
+  grad_accum: 8
+  learning_rate: 5.0e-6
+  beta: 0.1
+  max_length: 1536
+  max_prompt_length: 1024
+  logging_steps: 10
+
+merge:
+  merged_dir: models/finsage-merged-16bit
+  hub_repo: ""                 # e.g. "ashutosh/finsage-qwen2.5-3b" (leave "" to skip push)
+  push_to_hub: false
+
+eval:
+  output_report: outputs/eval_report.md
+  max_new_tokens: 512
+  # Optional LLM-as-judge via Anthropic API (set ANTHROPIC_API_KEY env var)
+  use_llm_judge: false
+  judge_model: claude-sonnet-4-6
+
+serve:
+  # path used by the Gradio/MLX demo (merged HF dir or local MLX dir)
+  model_path: models/finsage-merged-16bit
+  mlx_model_path: models/finsage-mlx-4bit
+  # GGUF file used by the FastAPI server (CPU inference — cloud + Mac)
+  gguf_path: models/finsage-merged-16bit-gguf/finsage.Q4_K_M.gguf
+
+# --- Cloud API server (FastAPI + llama.cpp, CPU-friendly) ---
+api:
+  host: 0.0.0.0
+  port: 8000
+  n_ctx: 4096
+  n_threads: 0          # 0 = auto-detect CPU cores
+  max_tokens: 512
+  temperature: 0.3
+  api_key: ""           # if set, clients must send header  X-API-Key: <value>
+
+# --- Retrieval-Augmented Generation (the RAG baseline) ---
+rag:
+  embed_model: sentence-transformers/all-MiniLM-L6-v2
+  index_dir: models/rag_index
+  chunk_chars: 1200
+  chunk_overlap: 150
+  top_k: 4
+  max_corpus_docs: 4000   # how many 10-K contexts to index (keeps it fast)
+
+# --- Prompt-engineering baseline (few-shot + chain-of-thought) ---
+prompting:
+  num_few_shot: 3
+  use_cot: true
+
+# --- Approach comparison benchmark ---
+compare:
+  output_report: outputs/comparison_report.md
+  chart_path: outputs/comparison_chart.png
+  max_rows: 150           # eval examples per approach
+  approaches:             # which to run
+    - base_zeroshot
+    - prompt_engineered
+    - rag
+    - finetuned
+    - finetuned_rag

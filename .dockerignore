@@ -1,0 +1,16 @@
+venv/
+.venv/
+.idea/
+.git/
+.github/
+__pycache__/
+*.pyc
+data/
+models/
+outputs/
+notebooks/
+docs/
+tests/
+*.gguf
+*.safetensors
+.DS_Store

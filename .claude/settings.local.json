@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sw_vers)",
+      "Bash(./venv/bin/python --version)",
+      "Bash(./venv/bin/pip install *)",
+      "Bash(./venv/bin/python -c ' *)",
+      "Bash(chmod +x scripts/run_all.sh)",
+      "Bash(./venv/bin/python -m pytest -q)",
+      "Bash(./venv/bin/python -m py_compile src/**/*.py src/*.py tests/*.py)",
+      "Bash(./venv/bin/pip list *)",
+      "Bash(./venv/bin/python -)",
+      "Bash(/usr/local/bin/python3 -m venv venv)",
+      "Bash(./venv/bin/python -m pip install -q -U pip)",
+      "Bash(./venv/bin/python -m src.data.prepare_sft_data)",
+      "WebSearch",
+      "Bash(./venv/bin/pip show *)",
+      "Bash(./venv/bin/python -c \"import sys; print\\(sys.version\\)\")",
+      "Bash(python3.11 -m venv venv)",
+      "Bash(echo \"✅ venv rebuilt on $\\(./venv/bin/python --version\\)\")",
+      "Bash(echo \"---- exit code: $? ----\")",
+      "Bash(git --version)",
+      "Bash(git config *)",
+      "Bash(echo \"user.name: $\\(git config --global user.name || echo UNSET\\)\")",
+      "Bash(echo \"user.email: $\\(git config --global user.email || echo UNSET\\)\")",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "Bash(git init *)",
+      "Bash(git add *)"
+    ]
+  }
+}

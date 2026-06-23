@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.idea/
+.DS_Store
+
+# Project artifacts (large)
+data/processed/
+models/
+outputs/
+*.gguf
+*.safetensors
+wandb/
+
+# Secrets
+.env
