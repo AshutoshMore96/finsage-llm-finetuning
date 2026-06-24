@@ -31,7 +31,8 @@
       "Bash(git commit -q -m ' *)",
       "Bash(./venv/bin/python -m py_compile src/quiet.py src/data/prepare_sft_data.py src/data/prepare_dpo_data.py src/eval/evaluate.py src/compare/llm_backend.py)",
       "Bash(./venv/bin/python -m py_compile src/eval/evaluate.py)",
-      "Bash(./venv/bin/python -c \"from src.config_utils import load_config; c=load_config\\(\\); print\\('judge_provider:', c.eval.judge_provider, '| model:', c.eval.judge_model, '| enabled:', c.eval.use_llm_judge\\)\")"
+      "Bash(./venv/bin/python -c \"from src.config_utils import load_config; c=load_config\\(\\); print\\('judge_provider:', c.eval.judge_provider, '| model:', c.eval.judge_model, '| enabled:', c.eval.use_llm_judge\\)\")",
+      "Bash(./venv/bin/python -m py_compile src/data/prepare_dpo_data.py)"
     ]
   }
 }
