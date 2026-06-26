@@ -33,7 +33,12 @@
       "Bash(./venv/bin/python -m py_compile src/eval/evaluate.py)",
       "Bash(./venv/bin/python -c \"from src.config_utils import load_config; c=load_config\\(\\); print\\('judge_provider:', c.eval.judge_provider, '| model:', c.eval.judge_model, '| enabled:', c.eval.use_llm_judge\\)\")",
       "Bash(./venv/bin/python -m py_compile src/data/prepare_dpo_data.py)",
-      "Bash(./venv/bin/python -c \"import json,nbformat\")"
+      "Bash(./venv/bin/python -c \"import json,nbformat\")",
+      "Bash(./venv/bin/python -m py_compile src/backup_cloud.py)",
+      "Bash(git commit -q -m 'Add src/backup_cloud.py: push artifacts to HF Hub or GCS *)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(echo \"--- exit: $? ---\")",
+      "Bash(git commit -q -m 'Add src/backup_cloud.py \\(HF Hub / GCS backup helper\\) + gcs dep note *)"
     ]
   }
 }
