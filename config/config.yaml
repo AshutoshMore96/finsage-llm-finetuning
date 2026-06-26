@@ -72,15 +72,11 @@ merge:
 eval:
   output_report: outputs/eval_report.md
   max_new_tokens: 512
-  # Optional LLM-as-judge. Disabled by default => the whole project costs $0.
-  # To enable: set use_llm_judge: true AND export the provider's API key.
-  use_llm_judge: false
-  judge_provider: groq          # groq (free) | gemini (free) | anthropic (paid)
-  # Pick a model matching the provider:
-  #   groq      -> llama-3.3-70b-versatile   (free, recommended)
-  #   gemini    -> gemini-2.0-flash          (free)
-  #   anthropic -> claude-sonnet-4-6         (paid)
-  judge_model: llama-3.3-70b-versatile
+  # Optional LLM-as-judge via Groq (free). Disabled by default => project costs $0.
+  # To enable: set use_llm_judge: true AND put GROQ_API_KEY=gsk_... in a .env file
+  # at the repo root (evaluate.py auto-loads it).
+  use_llm_judge: true
+  judge_model: llama-3.3-70b-versatile   # free Groq model
 
 serve:
   # path used by the Gradio/MLX demo (merged HF dir or local MLX dir)

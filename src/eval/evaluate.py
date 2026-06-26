@@ -3,7 +3,7 @@ Stage 4 — Evaluate base vs. fine-tuned on held-out finance Q&A.
 
 Metrics:
   * ROUGE-L (lexical overlap with the gold answer)
-  * (optional) LLM-as-judge win-rate via the Anthropic API
+  * (optional) LLM-as-judge win-rate via Groq (free; reads GROQ_API_KEY from .env)
 
 Writes a markdown report to outputs/eval_report.md.
 
@@ -19,6 +19,23 @@ from datasets import load_dataset
 from src.config_utils import abspath, load_config
 from src.data.prompts import render_prompt
 from src.quiet import quiet, tame_generation
+
+
+def _load_env_file() -> None:
+    """Load KEY=VALUE lines from a repo-root .env into os.environ (no dependency).
+    Makes GROQ_API_KEY available no matter how the script is launched."""
+    for base in (Path.cwd(), Path(__file__).resolve().parents[2]):
+        env_path = base / ".env"
+        if env_path.exists():
+            for line in env_path.read_text().splitlines():
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, val = line.split("=", 1)
+                os.environ.setdefault(key.strip(), val.strip().strip('"').strip("'"))
+
+
+_load_env_file()
 
 
 def load_model(model_name_or_path, cfg):
@@ -53,58 +70,27 @@ def rouge_l(pred: str, ref: str) -> float:
     return scorer.score(ref, pred)["rougeL"].fmeasure
 
 
-# Which env var holds each provider's API key
-_JUDGE_KEY_ENV = {
-    "groq": "GROQ_API_KEY",          # free  — console.groq.com
-    "gemini": "GOOGLE_API_KEY",      # free  — aistudio.google.com
-    "anthropic": "ANTHROPIC_API_KEY",  # paid — console.anthropic.com
-}
-
-
 def judge_ready(cfg) -> bool:
-    """True only if the judge is enabled AND the chosen provider's key is set."""
-    if not cfg.eval.use_llm_judge:
-        return False
-    provider = getattr(cfg.eval, "judge_provider", "groq").lower()
-    return bool(os.getenv(_JUDGE_KEY_ENV.get(provider, "")))
+    """True only if the judge is enabled AND GROQ_API_KEY is set."""
+    return bool(cfg.eval.use_llm_judge and os.getenv("GROQ_API_KEY"))
 
 
 def llm_judge(cfg, question, ref, ans_a, ans_b) -> str:
-    """Return 'A', 'B', or 'tie'. A = base, B = fine-tuned.
+    """Return 'A', 'B', or 'tie' (A = base, B = fine-tuned) using Groq (free)."""
+    from groq import Groq
 
-    Provider is set by cfg.eval.judge_provider: 'groq' (free, default),
-    'gemini' (free), or 'anthropic' (paid).
-    """
-    provider = getattr(cfg.eval, "judge_provider", "groq").lower()
+    client = Groq()  # reads GROQ_API_KEY from the environment
     prompt = (
         f"Question:\n{question}\n\nReference answer:\n{ref}\n\n"
         f"Assistant A:\n{ans_a}\n\nAssistant B:\n{ans_b}\n\n"
         "Which assistant answer is more accurate and helpful for this finance question? "
         "Reply with exactly one token: A, B, or tie."
     )
-
-    if provider == "groq":
-        from groq import Groq
-        client = Groq()  # reads GROQ_API_KEY
-        resp = client.chat.completions.create(
-            model=cfg.eval.judge_model, max_tokens=5,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        verdict = resp.choices[0].message.content.strip().upper()
-    elif provider == "gemini":
-        import google.generativeai as genai
-        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-        model = genai.GenerativeModel(cfg.eval.judge_model)
-        verdict = model.generate_content(prompt).text.strip().upper()
-    else:  # anthropic (paid)
-        import anthropic
-        client = anthropic.Anthropic()
-        msg = client.messages.create(
-            model=cfg.eval.judge_model, max_tokens=5,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        verdict = msg.content[0].text.strip().upper()
-
+    resp = client.chat.completions.create(
+        model=cfg.eval.judge_model, max_tokens=5,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    verdict = resp.choices[0].message.content.strip().upper()
     return "A" if "A" in verdict else "B" if "B" in verdict else "tie"
 
 
@@ -124,9 +110,12 @@ def main() -> None:
     wins = {"base": 0, "ft": 0, "tie": 0}
     rows_md = []
     judge_on = judge_ready(cfg)
-    if cfg.eval.use_llm_judge and not judge_on:
-        print(f"! LLM-judge enabled but no API key for provider "
-              f"'{getattr(cfg.eval, 'judge_provider', 'groq')}' — skipping judge.")
+    if judge_on:
+        print(f"· LLM-judge ON (Groq: {cfg.eval.judge_model})")
+    elif cfg.eval.use_llm_judge:
+        print("! LLM-judge enabled but GROQ_API_KEY not found — skipping judge.\n"
+              "  Put 'GROQ_API_KEY=gsk_...' in a .env file at the repo root, "
+              "or export it, then re-run.")
 
     for i, r in enumerate(rows):
         q = str(r.get("question", "")).strip()
