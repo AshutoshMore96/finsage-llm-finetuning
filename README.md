@@ -155,13 +155,34 @@ Full hosting guide (HF Spaces / Render / Fly.io / VM / vLLM-GPU): [`docs/DEPLOYM
 
 ---
 
-## 📈 Results (fill in after training)
+## 📈 Results
 
-| Metric | Base Qwen2.5-3B | + QLoRA SFT | + DPO |
-|--------|----------------|-------------|-------|
-| FinanceBench acc. | _ | _ | _ |
-| 10-K Q&A ROUGE-L | _ | _ | _ |
-| LLM-judge win-rate vs base | — | _ | _ |
+Evaluated on **300 held-out** finance Q&A examples (never seen during training).
+
+| Metric | Base Qwen2.5-3B | Fine-tuned (QLoRA SFT + DPO) |
+|--------|----------------:|-----------------------------:|
+| **ROUGE-L** (vs. gold answer) | 0.328 | **0.663** |
+| LLM-judge win-rate (Groq Llama-3.3-70B) | 91% | 9%\* |
+
+**ROUGE-L more than doubled (+102%).** The fine-tuned model produces concise,
+reference-aligned answers, while the base model is verbose and occasionally fabricates
+structure (see the example below).
+
+\* The raw LLM-judge favored the *base* model — a textbook case of **verbosity + position
+bias**: the base's long, bulleted answers read as "more helpful" to the judge despite lower
+factual alignment with the gold answer. Measured against ground truth (ROUGE-L) and on manual
+inspection, the fine-tuned model is clearly better. Takeaway: **LLM-as-judge must be debiased**
+(randomized option order, length-controlled rubric) before its scores can be trusted — a known
+pitfall this project surfaces rather than hides.
+
+### Example (held-out)
+> **Q:** What % of the Firm's 2023 employment opportunities were filled by external candidates?
+>
+> **Gold:** Approximately 60%.
+>
+> **Base:** *"To find the percentage… Given: 60%… The remaining 40%… Final Answer: 60%"* — correct but verbose.
+>
+> **Fine-tuned:** *"Approximately 60% of the Firm's employment opportunities in 2023 were filled by external candidates."* ✅ concise, matches the reference.
 
 ---
 
