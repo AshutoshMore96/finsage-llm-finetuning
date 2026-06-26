@@ -10,6 +10,16 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = REPO_ROOT / "config" / "config.yaml"
 
+# Auto-load secrets from a .env at the repo root (GROQ_API_KEY, HF_TOKEN, ...) so
+# they're available via os.getenv() without manually exporting. No-op if python-dotenv
+# isn't installed or .env is absent. Real env vars always take precedence.
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(REPO_ROOT / ".env", override=False)
+except Exception:
+    pass
+
 
 def _to_ns(obj):
     """Recursively convert dicts to attribute-access namespaces."""

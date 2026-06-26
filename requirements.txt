@@ -19,6 +19,7 @@ bitsandbytes>=0.44.0
 
 # Data / eval / serving
 pyyaml>=6.0
+python-dotenv>=1.0.0
 rouge-score>=0.1.2
 sentencepiece>=0.2.0
 gradio>=4.44.0
