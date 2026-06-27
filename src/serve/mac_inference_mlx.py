@@ -7,7 +7,7 @@ Prereqs (on the Mac):
     python -m mlx_lm.convert --hf-path models/finsage-merged-16bit -q \
         --mlx-path models/finsage-mlx-4bit
 
-Then:  python src/serve/mac_inference_mlx.py
+Then:  python -m src.serve.mac_inference_mlx
 """
 from __future__ import annotations
 

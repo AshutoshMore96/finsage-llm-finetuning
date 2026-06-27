@@ -54,7 +54,7 @@ def main() -> None:
         "Option A) MLX (native Apple Silicon):\n"
         f"  python -m mlx_lm.convert --hf-path {merged_dir} -q "
         f"--mlx-path {abspath(cfg.serve.mlx_model_path)}\n"
-        "  python src/serve/mac_inference_mlx.py\n\n"
+        "  python -m src.serve.mac_inference_mlx\n\n"
         "Option B) Ollama with the GGUF file:\n"
         "  1. Create a Modelfile:  FROM ./finsage-merged-16bit-gguf/<file>.gguf\n"
         "  2. ollama create finsage -f Modelfile && ollama run finsage\n"

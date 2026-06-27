@@ -200,7 +200,7 @@ Or via the FastAPI server: `pip install -r requirements-serve.txt && make api`.
 MLX (native Apple Silicon) alternative, from the **merged** repo:
 ```bash
 mlx_lm.convert --hf-path AshutoshMore96/finsage-merged -q --mlx-path models/finsage-mlx-4bit
-python src/serve/mac_inference_mlx.py
+python -m src.serve.mac_inference_mlx
 ```
 
 ### C) Evaluate (before vs after)
