@@ -66,9 +66,12 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between}
 }
 @keyframes drift{0%{transform:translateY(0)}100%{transform:translateY(-120px)}}
 .hero-grid{position:relative;display:grid;grid-template-columns:60% 40%;gap:40px;align-items:center;width:100%}
-.hero-solo{position:relative;display:flex;justify-content:center;width:100%}
-.hero-solo .term{max-width:660px;width:100%;font-size:14.5px}
-.hero-solo .term-body{padding:30px 28px}
+.hero-head{position:relative;display:flex;align-items:center;justify-content:center;gap:52px;width:100%;flex-wrap:wrap}
+.hero-brand{font-family:'Playfair Display',serif;font-weight:700;font-size:150px;line-height:.82;letter-spacing:-.03em;color:var(--text-primary)}
+.hero-brand span{display:block;color:var(--accent-gold)}
+.hero-head .term{max-width:560px;width:100%;font-size:14px}
+.hero-head .term-body{padding:28px}
+@media(max-width:900px){.hero-head{gap:24px}.hero-brand{font-size:92px}}
 .hero-h1{font-size:80px;margin:22px 0 26px}
 .hero-body{font-weight:300;font-size:20px;color:var(--text-secondary);max-width:520px;margin-bottom:34px;line-height:1.6}
 .hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
@@ -194,7 +197,8 @@ footer p{font-weight:300;font-size:13px;color:var(--text-muted)}
 <section id="hero">
   <div class="hero-bg"></div>
   <div id="particles"></div>
-  <div class="wrap hero-solo">
+  <div class="wrap hero-head">
+    <div class="hero-brand reveal">Fin<span>Sage</span></div>
     <div class="term reveal">
       <div class="term-bar">
         <span class="dot" style="background:#FF5F56"></span><span class="dot" style="background:#FFBD2E"></span><span class="dot" style="background:var(--accent-gold)"></span>
