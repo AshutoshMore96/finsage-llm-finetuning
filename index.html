@@ -347,6 +347,29 @@ const seed=[
 ];
 (async function seedChat(){for(const s of seed){addUser(s.u);await new Promise(r=>setTimeout(r,200));const el=botBubble();await typeOut(el,s.b,null);}})();
 
+/* curated finance answers — used when the live backend isn't reachable
+   (so the demo always responds intelligently for any visitor) */
+const KB=[
+ {k:['ebitda','net income'],a:"EBITDA (Earnings Before Interest, Taxes, Depreciation, and Amortization) measures core operating profitability before those items are deducted. Net income is the final profit after ALL expenses — interest, taxes, depreciation, and amortization. EBITDA isolates operating performance; net income reflects the full financial picture."},
+ {k:['ebitda'],a:"EBITDA = Net Income + Interest + Taxes + Depreciation + Amortization (or: Operating Income + D&A). It approximates operating profitability before capital structure and non-cash charges, which makes it useful for comparing companies with different debt and tax situations."},
+ {k:['p/e','pe ratio','price earnings','price-to-earnings','price to earnings'],a:"The P/E (price-to-earnings) ratio = Share Price ÷ Earnings Per Share. It shows how much investors pay per $1 of earnings. A high P/E implies high growth expectations; a low P/E can signal value or risk. Always compare within the same industry."},
+ {k:['dcf','discounted cash flow','intrinsic value'],a:"A DCF (Discounted Cash Flow) values a company as the present value of its future free cash flows. Steps: (1) project FCF for ~5–10 years, (2) discount each year by the WACC, (3) add a terminal value, (4) sum it to enterprise value. It ties value to cash generation rather than market sentiment."},
+ {k:['gross','net margin'],a:"Gross margin = (Revenue − COGS) ÷ Revenue — profit after direct production costs. Net margin = Net Income ÷ Revenue — profit after ALL costs (operating expenses, interest, taxes). Gross margin measures product-level profitability; net margin measures overall profitability."},
+ {k:['operating margin','ebit'],a:"Operating margin = Operating Income (EBIT) ÷ Revenue. Example: Revenue $500M − COGS $300M − OpEx $120M = EBIT $80M → $80M ÷ $500M = 16%. It shows the operating profit kept per dollar of revenue, before interest and taxes."},
+ {k:['free cash flow','fcf'],a:"Free Cash Flow = Operating Cash Flow − Capital Expenditures. It's the cash a company generates after funding operations and maintaining its asset base — available for debt, dividends, buybacks, or reinvestment. Investors favour it because it's harder to manipulate than earnings."},
+ {k:['10-k','10k','10-q','10q','filing'],a:"A 10-K is the comprehensive ANNUAL report filed with the SEC — audited financials, risk factors, MD&A, and business overview. A 10-Q is the shorter QUARTERLY report — unaudited financials and updates. 10-K: once a year, thorough; 10-Q: three times a year, lighter."},
+ {k:['current ratio','liquidity'],a:"Current ratio = Current Assets ÷ Current Liabilities — a measure of short-term liquidity. Above 1 means the company can cover near-term obligations; below 1 signals potential liquidity stress. A very high ratio may indicate idle assets."},
+ {k:['roe','return on equity'],a:"Return on Equity (ROE) = Net Income ÷ Shareholders' Equity. It shows how efficiently a company turns equity into profit. Higher is generally better — but very high ROE can be driven by heavy leverage, so always check the debt level too."},
+ {k:['working capital'],a:"Working Capital = Current Assets − Current Liabilities. It's the short-term cushion funding day-to-day operations. Positive means current assets exceed current liabilities; negative can signal liquidity pressure (though some efficient businesses run on it deliberately)."},
+];
+function demoAnswer(q){
+  const s=q.toLowerCase();let best=null,score=0;
+  for(const e of KB){let n=0;for(const k of e.k){if(s.includes(k))n++;}
+    if(n>score){score=n;best=e;}}
+  if(best&&score>0)return best.a;
+  return "I cover core financial concepts. Try one of the suggestions below — for example EBITDA, the P/E ratio, DCF valuation, operating margin, or 10-K vs 10-Q. (This is a static demo; the full fine-tuned model runs locally via Ollama.)";
+}
+
 let busy=false;
 async function submit(){const text=input.value.trim();if(!text||busy)return;busy=true;input.value='';
   addUser(text);const el=botBubble();el.innerHTML='<span class="typing"><span></span><span></span><span></span></span>';msgs.scrollTop=msgs.scrollHeight;
@@ -356,7 +379,8 @@ async function submit(){const text=input.value.trim();if(!text||busy)return;busy
     const secs=((performance.now()-t0)/1000).toFixed(1);
     await typeOut(el,full.trim(),'Generated in '+secs+'s · qwen2.5-3b · gguf-q4_k_m');
   }catch(err){
-    el.innerHTML='FinSage is not connected. Start it locally with:<div class="meta" style="margin-top:10px;color:var(--accent-gold)">ollama run finsage</div><span class="ts">'+now()+'</span>';
+    // backend unreachable (e.g. on the hosted site) -> curated offline answer
+    await typeOut(el, demoAnswer(text), 'qwen2.5-3b · offline demo');
   }
   busy=false;}
 
