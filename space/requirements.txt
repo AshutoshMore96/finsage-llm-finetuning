@@ -1,4 +1,6 @@
 fastapi
 uvicorn[standard]
+# prebuilt CPU wheel — avoids the slow source compile on the Space
+--extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
 llama-cpp-python
 huggingface_hub
