@@ -28,6 +28,10 @@ section{scroll-margin-top:80px}
 .display{font-family:'Playfair Display',serif;letter-spacing:-.02em;line-height:1.05;color:var(--text-primary)}
 .mono{font-family:'JetBrains Mono',monospace}
 a{color:inherit;text-decoration:none}
+.topleft{position:fixed;top:24px;left:30px;z-index:60;display:flex;gap:18px;align-items:center}
+.topleft a{color:var(--text-secondary);display:flex;transition:color .2s,transform .2s}
+.topleft a:hover{color:var(--accent-gold);transform:translateY(-1px)}
+.topleft svg{width:20px;height:20px}
 
 /* ---- staggered load + scroll reveal ---- */
 .reveal{opacity:0;transform:translateY(24px)}
@@ -189,6 +193,12 @@ footer p{font-weight:300;font-size:13px;color:var(--text-muted)}
 </style>
 </head>
 <body>
+
+<!-- TOP-LEFT LINKS -->
+<div class="topleft">
+  <a href="https://github.com/AshutoshMore96/finsage-llm-finetuning" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12a11.5 11.5 0 0 0 7.9 10.9c.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.6 18 4.9 18 4.9c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"/></svg></a>
+  <a href="https://www.linkedin.com/in/ashutoshmore" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM10 9h3.8v1.7h.1c.5-1 1.8-2 3.7-2 4 0 4.7 2.6 4.7 6V21h-4v-5.3c0-1.3 0-2.9-1.8-2.9s-2 1.4-2 2.8V21h-4z"/></svg></a>
+</div>
 
 <!-- HERO -->
 <section id="hero">
