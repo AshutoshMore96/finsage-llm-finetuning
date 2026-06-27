@@ -83,7 +83,7 @@ serve:
   model_path: models/finsage-merged-16bit
   mlx_model_path: models/finsage-mlx-4bit
   # GGUF file used by the FastAPI server (CPU inference — cloud + Mac)
-  gguf_path: models/finsage-merged-16bit-gguf/finsage.Q4_K_M.gguf
+  gguf_path: models/gguf/Qwen2.5-3B-Instruct.Q4_K_M.gguf
 
 # --- Cloud API server (FastAPI + llama.cpp, CPU-friendly) ---
 api:
