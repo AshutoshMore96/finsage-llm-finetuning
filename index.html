@@ -75,8 +75,10 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between}
 .hm:last-child{border-right:none}
 .hm-num{font-family:'JetBrains Mono';font-weight:500;font-size:22px;color:var(--accent-gold);line-height:1;white-space:nowrap}
 .hm-lbl{font-size:9.5px;color:var(--text-secondary);margin-top:6px;line-height:1.25}
-.hero-head .term{width:100%;font-size:14px}
+.hero-head .term{width:100%;font-size:14px;cursor:pointer;transition:box-shadow .3s,border-color .3s,transform .3s}
+.hero-head .term:hover{border-color:rgba(201,168,76,.5);box-shadow:0 44px 90px rgba(0,0,0,.6),0 0 0 1px rgba(201,168,76,.35)}
 .hero-head .term-body{padding:28px}
+.term-hint{text-align:center;font-family:'JetBrains Mono';font-size:11px;color:var(--text-muted);letter-spacing:.08em;margin-top:2px}
 @media(max-width:900px){.hero-head{gap:24px}.hero-brand{font-size:92px}}
 .hero-h1{font-size:80px;margin:22px 0 26px}
 .hero-body{font-weight:300;font-size:20px;color:var(--text-secondary);max-width:520px;margin-bottom:34px;line-height:1.6}
@@ -217,6 +219,7 @@ footer p{font-weight:300;font-size:13px;color:var(--text-muted)}
          $80M ÷ $500M = 16.0%  <span class="cursor"></span>
       </div>
       </div>
+      <div class="term-hint">click the terminal to ask your own question ↓</div>
     </div>
   </div>
 </section>
@@ -364,6 +367,15 @@ async function callBackend(prompt){
 send.addEventListener('click',submit);
 input.addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
 document.getElementById('prompts').addEventListener('click',e=>{if(e.target.classList.contains('pill')){input.value=e.target.textContent;input.focus();}});
+
+/* ---- click hero terminal -> swipe up to the chat & focus input ---- */
+const heroTerm=document.querySelector('.hero-head .term');
+if(heroTerm){
+  heroTerm.addEventListener('click',()=>{
+    document.getElementById('demo').scrollIntoView({behavior:'smooth',block:'start'});
+    setTimeout(()=>input.focus({preventScroll:true}),650);
+  });
+}
 
 /* ---- toast ---- */
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000);}
