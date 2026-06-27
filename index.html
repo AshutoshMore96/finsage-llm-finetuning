@@ -181,18 +181,6 @@ footer p{font-weight:300;font-size:13px;color:var(--text-muted)}
 </head>
 <body>
 
-<!-- NAV -->
-<nav id="nav"><div class="wrap">
-  <div class="brand">Fin<span>Sage</span></div>
-  <div class="navlinks">
-    <a href="#demo">Demo</a>
-    <a href="#arch">Architecture</a>
-    <a href="#metrics">Results</a>
-    <a href="#creator">About</a>
-    <a class="nav-cta" href="https://github.com/AshutoshMore96/finsage-llm-finetuning" target="_blank" rel="noopener">GitHub</a>
-  </div>
-</div></nav>
-
 <!-- HERO -->
 <section id="hero">
   <div class="hero-bg"></div>
@@ -330,10 +318,6 @@ footer p{font-weight:300;font-size:13px;color:var(--text-muted)}
  * `ollama run finsage` on the same machine). To make the demo public, point
  * FINSAGE at your deployed FastAPI/HF-Space endpoint and set type:'openai-chat'. */
 const FINSAGE = { type:'ollama', url:'http://localhost:11434/api/chat', model:'finsage' };
-
-/* ---- sticky nav ---- */
-const nav=document.getElementById('nav');
-addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>80));
 
 /* ---- particles ---- */
 (function(){const box=document.getElementById('particles');for(let i=0;i<60;i++){const s=document.createElement('span');
