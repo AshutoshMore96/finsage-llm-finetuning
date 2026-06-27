@@ -12,6 +12,7 @@ Run on GPU (fast) or Mac (slow):  python -m src.eval.evaluate
 from __future__ import annotations
 
 import os
+import random
 from pathlib import Path
 
 from datasets import load_dataset
@@ -75,23 +76,49 @@ def judge_ready(cfg) -> bool:
     return bool(cfg.eval.use_llm_judge and os.getenv("GROQ_API_KEY"))
 
 
-def llm_judge(cfg, question, ref, ans_a, ans_b) -> str:
-    """Return 'A', 'B', or 'tie' (A = base, B = fine-tuned) using Groq (free)."""
+JUDGE_RUBRIC = (
+    "You are grading two candidate answers to a finance question against a REFERENCE "
+    "answer.\n"
+    "Judge ONLY factual correctness and alignment with the reference. "
+    "IGNORE length and writing style — a longer, more elaborate, or bulleted answer is "
+    "NOT better. A concise answer that matches the reference facts is best; an answer that "
+    "adds unsupported claims is worse.\n\n"
+    "Question:\n{question}\n\nReference answer:\n{ref}\n\n"
+    "Answer A:\n{a}\n\nAnswer B:\n{b}\n\n"
+    "Which answer is more factually correct and closer to the reference? "
+    "Reply with exactly one token: A, B, or tie."
+)
+
+
+def llm_judge(cfg, question, ref, base_ans, ft_ans, rng) -> str:
+    """Debiased LLM-as-judge via Groq. Returns 'base', 'ft', or 'tie'.
+
+    Mitigates the two classic judge biases:
+      * position bias — randomizes which answer is shown as A vs B
+      * verbosity bias — rubric tells the judge to ignore length/style
+    """
     from groq import Groq
 
     client = Groq()  # reads GROQ_API_KEY from the environment
-    prompt = (
-        f"Question:\n{question}\n\nReference answer:\n{ref}\n\n"
-        f"Assistant A:\n{ans_a}\n\nAssistant B:\n{ans_b}\n\n"
-        "Which assistant answer is more accurate and helpful for this finance question? "
-        "Reply with exactly one token: A, B, or tie."
-    )
+
+    a_is_ft = rng.random() < 0.5            # randomize order
+    a_text, b_text = (ft_ans, base_ans) if a_is_ft else (base_ans, ft_ans)
+    prompt = JUDGE_RUBRIC.format(question=question, ref=ref, a=a_text, b=b_text)
+
     resp = client.chat.completions.create(
         model=cfg.eval.judge_model, max_tokens=5,
         messages=[{"role": "user", "content": prompt}],
     )
-    verdict = resp.choices[0].message.content.strip().upper()
-    return "A" if "A" in verdict else "B" if "B" in verdict else "tie"
+    v = resp.choices[0].message.content.strip().upper()
+
+    has_a, has_b = "A" in v, "B" in v
+    if "TIE" in v or has_a == has_b:        # tie, or ambiguous -> tie
+        return "tie"
+    chose_a = has_a and not has_b
+    # map the chosen slot back to which model it was
+    if chose_a:
+        return "ft" if a_is_ft else "base"
+    return "base" if a_is_ft else "ft"
 
 
 def main() -> None:
@@ -110,8 +137,9 @@ def main() -> None:
     wins = {"base": 0, "ft": 0, "tie": 0}
     rows_md = []
     judge_on = judge_ready(cfg)
+    judge_rng = random.Random(cfg.data.seed)   # reproducible A/B shuffling
     if judge_on:
-        print(f"· LLM-judge ON (Groq: {cfg.eval.judge_model})")
+        print(f"· LLM-judge ON (Groq: {cfg.eval.judge_model}, debiased)")
     elif cfg.eval.use_llm_judge:
         print("! LLM-judge enabled but GROQ_API_KEY not found — skipping judge.\n"
               "  Put 'GROQ_API_KEY=gsk_...' in a .env file at the repo root, "
@@ -132,8 +160,7 @@ def main() -> None:
         ft_rouge.append(rouge_l(ft_ans, gold))
 
         if judge_on:
-            v = llm_judge(cfg, q, gold, base_ans, ft_ans)
-            wins["base" if v == "A" else "ft" if v == "B" else "tie"] += 1
+            wins[llm_judge(cfg, q, gold, base_ans, ft_ans, judge_rng)] += 1
 
         if i < 5:  # keep a few qualitative examples in the report
             rows_md.append(
