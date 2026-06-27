@@ -69,7 +69,13 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between}
 .hero-head{position:relative;display:flex;align-items:center;justify-content:center;gap:52px;width:100%;flex-wrap:wrap}
 .hero-brand{font-family:'Playfair Display',serif;font-weight:700;font-size:150px;line-height:.82;letter-spacing:-.03em;color:var(--text-primary)}
 .hero-brand span{display:block;color:var(--accent-gold)}
-.hero-head .term{max-width:560px;width:100%;font-size:14px}
+.hero-stack{display:flex;flex-direction:column;gap:16px;max-width:560px;width:100%}
+.hero-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;border:1px solid var(--border);border-radius:12px;background:var(--bg-surface);padding:14px 8px}
+.hm{text-align:center;padding:2px;border-right:1px solid var(--border)}
+.hm:last-child{border-right:none}
+.hm-num{font-family:'JetBrains Mono';font-weight:500;font-size:22px;color:var(--accent-gold);line-height:1;white-space:nowrap}
+.hm-lbl{font-size:9.5px;color:var(--text-secondary);margin-top:6px;line-height:1.25}
+.hero-head .term{width:100%;font-size:14px}
 .hero-head .term-body{padding:28px}
 @media(max-width:900px){.hero-head{gap:24px}.hero-brand{font-size:92px}}
 .hero-h1{font-size:80px;margin:22px 0 26px}
@@ -187,7 +193,14 @@ footer p{font-weight:300;font-size:13px;color:var(--text-muted)}
   <div id="particles"></div>
   <div class="wrap hero-head">
     <div class="hero-brand reveal">Fin<span>Sage</span></div>
-    <div class="term reveal">
+    <div class="hero-stack reveal">
+      <div class="hero-metrics">
+        <div class="hm"><div class="hm-num">3B</div><div class="hm-lbl">Parameters</div></div>
+        <div class="hm"><div class="hm-num">1.8&nbsp;GB</div><div class="hm-lbl">GGUF&nbsp;Q4_K_M</div></div>
+        <div class="hm"><div class="hm-num">20K+</div><div class="hm-lbl">Training pairs</div></div>
+        <div class="hm"><div class="hm-num">+102%</div><div class="hm-lbl">ROUGE-L gain</div></div>
+      </div>
+      <div class="term">
       <div class="term-bar">
         <span class="dot" style="background:#FF5F56"></span><span class="dot" style="background:#FFBD2E"></span><span class="dot" style="background:var(--accent-gold)"></span>
         <span class="term-title mono">finsage · qwen2.5-3b · gguf-q4_k_m</span>
@@ -202,6 +215,7 @@ footer p{font-weight:300;font-size:13px;color:var(--text-muted)}
          COGS:    – $300M
          EBIT:      $80M
          $80M ÷ $500M = 16.0%  <span class="cursor"></span>
+      </div>
       </div>
     </div>
   </div>
@@ -269,15 +283,6 @@ footer p{font-weight:300;font-size:13px;color:var(--text-muted)}
   </div>
 </section>
 
-<!-- METRICS -->
-<section id="metrics" class="pad">
-  <div class="wrap mrow" id="mrow">
-    <div class="mcell"><div class="mnum" data-target="3" data-suffix="B">0</div><div class="mlbl">Parameters</div></div>
-    <div class="mcell"><div class="mnum" data-target="1.8" data-suffix="GB" data-dec="1">0</div><div class="mlbl">GGUF Q4_K_M model size</div></div>
-    <div class="mcell"><div class="mnum" data-target="20" data-suffix="K+">0</div><div class="mlbl">Training pairs</div></div>
-    <div class="mcell"><div class="mnum" data-target="102" data-prefix="+" data-suffix="%">0</div><div class="mlbl">ROUGE-L gain over base</div></div>
-  </div>
-</section>
 
 
 <footer><div class="wrap">
@@ -308,16 +313,6 @@ addEventListener('load',()=>{document.querySelectorAll('#hero .reveal').forEach(
 const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:0.15});
 document.querySelectorAll('.reveal:not(#hero .reveal)').forEach(el=>io.observe(el));
 
-/* ---- metrics count-up ---- */
-const mrow=document.getElementById('mrow');let counted=false;
-const mio=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting&&!counted){counted=true;runCount();}});},{threshold:0.4});
-mio.observe(mrow);
-function runCount(){document.querySelectorAll('.mnum').forEach(el=>{
-  const t=parseFloat(el.dataset.target),dec=parseInt(el.dataset.dec||'0'),pre=el.dataset.prefix||'',suf=el.dataset.suffix||'';
-  const dur=1500,t0=performance.now();
-  function step(now){let p=Math.min((now-t0)/dur,1);p=1-Math.pow(1-p,4);/*easeOutQuart*/
-    el.textContent=pre+(t*p).toFixed(dec)+suf;if(p<1)requestAnimationFrame(step);}
-  requestAnimationFrame(step);});}
 
 /* ---- chat ---- */
 const msgs=document.getElementById('msgs'),input=document.getElementById('input'),send=document.getElementById('send');
