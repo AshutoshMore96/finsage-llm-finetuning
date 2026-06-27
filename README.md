@@ -1,5 +1,7 @@
 # FinSage 📈 — Fine-Tuning an LLM into a Finance Reasoning Assistant
 
+![FinSage running locally on an M2](finsage_demo.gif)
+
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![Base model](https://img.shields.io/badge/base-Qwen2.5--3B--Instruct-orange)
 ![Techniques](https://img.shields.io/badge/QLoRA%20%7C%20DPO%20%7C%20GGUF-green)

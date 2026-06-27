@@ -1,0 +1,5 @@
+FROM ./models/gguf/Qwen2.5-3B-Instruct.Q4_K_M.gguf
+SYSTEM """You are FinSage, a meticulous financial-analysis assistant. Answer the question directly and concisely. Do not output sentiment labels or extra tokens."""
+PARAMETER temperature 0.3
+PARAMETER stop "<|im_end|>"
+PARAMETER stop "neutral"
