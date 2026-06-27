@@ -76,7 +76,7 @@ eval:
   # To enable: set use_llm_judge: true AND put GROQ_API_KEY=gsk_... in a .env file
   # at the repo root (evaluate.py auto-loads it).
   use_llm_judge: true
-  judge_model: llama-3.3-70b-versatile   # free Groq model
+  judge_model: llama-3.1-8b-instant   # small free Groq model (high daily token limit)
 
 serve:
   # path used by the Gradio/MLX demo (merged HF dir or local MLX dir)

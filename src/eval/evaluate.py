@@ -160,7 +160,14 @@ def main() -> None:
         ft_rouge.append(rouge_l(ft_ans, gold))
 
         if judge_on:
-            wins[llm_judge(cfg, q, gold, base_ans, ft_ans, judge_rng)] += 1
+            try:
+                wins[llm_judge(cfg, q, gold, base_ans, ft_ans, judge_rng)] += 1
+            except Exception as e:
+                # e.g. Groq 429 rate limit — stop judging but keep ROUGE + write report
+                print(f"! judge stopped at example {i} "
+                      f"({type(e).__name__}: {str(e)[:100]}) — continuing with ROUGE only "
+                      f"({sum(wins.values())} judged so far).")
+                judge_on = False
 
         if i < 5:  # keep a few qualitative examples in the report
             rows_md.append(
