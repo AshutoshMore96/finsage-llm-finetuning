@@ -21,8 +21,8 @@ assistant using the **full modern fine-tuning stack** — then run it on a lapto
 - **Fine-tuned** Qwen2.5-3B on SEC 10-K Q&A + finance instructions with **QLoRA**, then aligned
   with **DPO** using a self-generated preference dataset (the RLHF "data flywheel").
 - **ROUGE-L doubled: 0.328 → 0.663** on a 300-example held-out set.
-- Evaluated with a **debiased LLM-as-judge** (Groq Llama-3.3-70B) after identifying verbosity +
-  position bias in the naïve judge.
+- Evaluated with a **debiased LLM-as-judge** (Groq): identifying + correcting verbosity/position
+  bias swung the judged win-rate from a misleading 91%–9% (base) to a true ~tie (49%–46%, fine-tuned).
 - Quantized to **GGUF (Q4_K_M, 1.8 GB)** → runs locally via Ollama / llama.cpp on an 8 GB Mac.
 - Includes a **fine-tune vs. RAG vs. prompt-engineering** benchmark and a **FastAPI** serving
   layer (Docker-ready).
@@ -56,18 +56,24 @@ Evaluated on **300 held-out** finance Q&A examples (never seen during training).
 | Metric | Base Qwen2.5-3B | Fine-tuned (QLoRA SFT + DPO) |
 |--------|----------------:|-----------------------------:|
 | **ROUGE-L** (vs. gold answer) | 0.328 | **0.663** |
-| LLM-judge win-rate (Groq Llama-3.3-70B) | 91% | 9%\* |
+| LLM-judge win-rate — *naïve* | 91% | 9% |
+| LLM-judge win-rate — **debiased** | 46% | **49%** (tie 5%) |
 
 **ROUGE-L more than doubled (+102%).** The fine-tuned model produces concise, reference-aligned
 answers; the base model is verbose and occasionally fabricates structure.
 
-\* The *naïve* LLM-judge favored the base model — a textbook case of **verbosity + position
-bias**: the base's long, bulleted answers read as "more helpful" despite lower factual alignment
-with the gold answer. Measured against ground truth (ROUGE-L) and on inspection, the fine-tuned
-model is clearly better. The judge is now **debiased** (randomized A/B order + a length-neutral,
-correctness-focused rubric — see [`src/eval/evaluate.py`](src/eval/evaluate.py)). _Takeaway:
-LLM-as-judge scores can't be trusted until debiased — a pitfall this project surfaces rather than
-hides._
+**The LLM-judge story is the interesting part.** A *naïve* judge favored the base model 91%–9% —
+a textbook case of **verbosity + position bias** (the base's long, bulleted answers read as "more
+helpful," and it was always shown first). After **debiasing the judge** (randomized A/B order +
+a length-neutral, correctness-focused rubric — see [`src/eval/evaluate.py`](src/eval/evaluate.py)),
+the result collapses to a near-tie (**49% vs 46%**, fine-tuned slightly ahead). That ~40-point
+swing shows the original "base win" was **almost entirely an artifact, not quality**.
+
+_Honest interpretation:_ both models are similarly *factually* correct (the base already has the
+facts from the provided 10-K context), so a length-neutral judge rates them close. Fine-tuning's
+real, measurable win is **concise, reference-aligned output** — exactly what ROUGE-L captures and
+what SFT+DPO targets. _Takeaway: LLM-as-judge scores can't be trusted until debiased — a pitfall
+this project surfaces rather than hides._ (Judge: Groq `llama-3.1-8b-instant`, 300 held-out examples.)
 
 ### Example (held-out)
 > **Q:** What % of the Firm's 2023 employment opportunities were filled by external candidates?
