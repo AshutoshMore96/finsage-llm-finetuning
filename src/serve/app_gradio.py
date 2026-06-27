@@ -95,7 +95,6 @@ def main() -> None:
     respond = _load_backend()
     demo = gr.ChatInterface(
         fn=respond,
-        type="messages",
         title="FinSage 📈 — Finance Reasoning Assistant",
         description="Fine-tuned Qwen2.5-3B (QLoRA + DPO). Ask about filings, valuation, "
                     "accounting, or financial reasoning.",
