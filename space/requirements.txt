@@ -1,6 +1,7 @@
 fastapi
 uvicorn[standard]
-# prebuilt CPU wheel — avoids the slow source compile on the Space
+# Prebuilt CPU wheel, version-pinned to one that EXISTS on the index, so pip installs
+# the wheel instead of compiling from source (unpinned grabs a newer PyPI sdist -> OOM build).
 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
-llama-cpp-python
+llama-cpp-python==0.3.19
 huggingface_hub
