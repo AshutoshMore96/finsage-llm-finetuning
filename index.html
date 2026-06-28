@@ -307,13 +307,13 @@ footer p{font-weight:300;font-size:13px;color:var(--text-muted)}
 
 <script>
 /* ============ config ============
- * Live backend = the FinSage Hugging Face Space (FastAPI + llama.cpp), so the chat
- * works for every visitor. If it's unreachable/cold, the curated demo-mode answers
- * kick in automatically (see demoAnswer).
- * ⚠️ After deploying, set this to YOUR Space's direct URL + /chat. The format is
- *    https://<hf-username>-<space-name>.hf.space/chat  (all lowercase).
- * To use a local model instead, set: {type:'ollama', url:'http://localhost:11434/api/chat', model:'finsage'} */
-const FINSAGE = { type:'openai-chat', url:'https://ashutoshmore96-finsage.hf.space/chat' };
+ * 'demo' = instant curated finance answers (see demoAnswer) — reliable for every
+ * visitor, no backend needed. This is the production setting.
+ * Other backends (a free-CPU HF Space works but is ~1–2 min/reply, too slow for a demo;
+ * use only with GPU hardware):
+ *   live HF Space : { type:'openai-chat', url:'https://ashutoshmore96-finsage.hf.space/chat' }
+ *   local Ollama  : { type:'ollama', url:'http://localhost:11434/api/chat', model:'finsage' } */
+const FINSAGE = { type:'demo' };
 
 /* warm up the HF Space on load (free Spaces sleep) so the first query is faster */
 if(FINSAGE.type==='openai-chat'){
@@ -393,6 +393,7 @@ async function submit(){const text=input.value.trim();if(!text||busy)return;busy
   busy=false;}
 
 async function callBackend(prompt){
+  if(FINSAGE.type==='demo') throw new Error('demo-mode');   // -> curated demoAnswer, instant
   if(FINSAGE.type==='ollama'){
     // /api/chat applies the model's chat template (correct instruct behaviour);
     // /api/generate would treat the text as raw completion and continue the sentence.
