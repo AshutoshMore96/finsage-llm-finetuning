@@ -1,9 +1,6 @@
-# All deps resolve to musllinux wheels on Alpine (no compiling):
-#  - uvicorn (plain, not [standard]) avoids uvloop/httptools source builds
-#  - huggingface_hub pinned below the hf-xet (rust) dependency
-#  - llama-cpp-python prebuilt musl CPU wheel from the index
+# llama-cpp-python unpinned -> builds the latest llama.cpp from source, which (unlike the
+# old prebuilt wheels) decodes this Qwen2.5 GGUF correctly. Compiled glibc-native here.
 fastapi
 uvicorn
-huggingface_hub==0.25.2
---extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
-llama-cpp-python==0.3.19
+huggingface_hub
+llama-cpp-python
