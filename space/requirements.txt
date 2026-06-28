@@ -1,7 +1,9 @@
+# All deps resolve to musllinux wheels on Alpine (no compiling):
+#  - uvicorn (plain, not [standard]) avoids uvloop/httptools source builds
+#  - huggingface_hub pinned below the hf-xet (rust) dependency
+#  - llama-cpp-python prebuilt musl CPU wheel from the index
 fastapi
-uvicorn[standard]
-# Prebuilt CPU wheel, version-pinned to one that EXISTS on the index, so pip installs
-# the wheel instead of compiling from source (unpinned grabs a newer PyPI sdist -> OOM build).
+uvicorn
+huggingface_hub==0.25.2
 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
 llama-cpp-python==0.3.19
-huggingface_hub

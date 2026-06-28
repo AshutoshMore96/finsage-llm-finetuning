@@ -1,8 +1,10 @@
-# FinSage API on Hugging Face Spaces (Docker SDK, CPU).
-FROM python:3.11-slim
+# FinSage API on Hugging Face Spaces.
+# Alpine (musl) base — matches the prebuilt llama-cpp-python CPU wheel (musl-linked),
+# so it installs fast AND loads at runtime (no source compile, no glibc/musl mismatch).
+FROM python:3.11-alpine
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential cmake git && rm -rf /var/lib/apt/lists/*
+# Runtime libs the llama.cpp shared object needs (C++ stdlib + OpenMP).
+RUN apk add --no-cache libstdc++ libgomp
 
 WORKDIR /app
 
@@ -11,7 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py .
 
-# HF cache lives here; make it writable for the Space's non-root user.
+# Writable HF cache for the non-root Spaces user.
 ENV HF_HOME=/app/.cache
 RUN mkdir -p /app/.cache && chmod -R 777 /app/.cache
 
