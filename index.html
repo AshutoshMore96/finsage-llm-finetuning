@@ -157,6 +157,19 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between}
 .card p{color:var(--text-secondary);font-size:14.5px;line-height:1.65;font-weight:300}
 .statpill{display:inline-block;margin-top:18px;font-family:'JetBrains Mono';font-size:11px;color:var(--accent-gold);background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);padding:5px 11px;border-radius:999px}
 
+/* ---- pipeline ---- */
+#pipeline{background:var(--bg-surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.flow{display:flex;align-items:stretch;justify-content:center;gap:6px;flex-wrap:wrap}
+.node{flex:1 1 130px;min-width:118px;max-width:168px;background:var(--bg-void);border:1px solid var(--border);border-radius:12px;padding:18px 14px;text-align:center;transition:border-color .3s,transform .3s}
+.node:hover{border-color:rgba(201,168,76,.4);transform:translateY(-3px)}
+.node.gold{border-color:rgba(201,168,76,.5);background:rgba(201,168,76,.05)}
+.node-k{font-family:'JetBrains Mono';font-size:11px;color:var(--text-muted)}
+.node-t{font-weight:600;font-size:15px;margin:8px 0 5px}
+.node.gold .node-t{color:var(--accent-gold)}
+.node-s{font-size:11px;color:var(--text-secondary);font-weight:300;line-height:1.35}
+.arrow{display:flex;align-items:center;color:var(--accent-gold);font-size:18px;font-family:'JetBrains Mono'}
+@media(max-width:760px){.flow{flex-direction:column;align-items:stretch}.node{max-width:none}.arrow{transform:rotate(90deg);justify-content:center;padding:2px 0}}
+
 /* ---- results ---- */
 #results{background:var(--bg-void)}
 .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:900px;margin:0 auto}
@@ -313,6 +326,26 @@ footer p{font-weight:300;font-size:13px;color:var(--text-muted)}
         <p>Merged and quantised to GGUF (Q4_K_M, 1.8&nbsp;GB). Runs locally on an 8&nbsp;GB Apple M2 via Ollama / llama.cpp, or as a FastAPI service — Docker-ready for any cloud.</p>
         <span class="statpill">1.8 GB · runs on an 8 GB laptop</span>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section id="pipeline" class="pad">
+  <div class="wrap">
+    <div class="shead"><div class="eyebrow reveal">Pipeline</div></div>
+    <div class="flow reveal">
+      <div class="node"><div class="node-k">01</div><div class="node-t">Data</div><div class="node-s">Sujet · 10-K Q&amp;A · FinQA</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="node-k">02</div><div class="node-t">QLoRA SFT</div><div class="node-s">4-bit · unsloth + trl</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="node-k">03</div><div class="node-t">DPO</div><div class="node-s">preference alignment</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="node-k">04</div><div class="node-t">Merge</div><div class="node-s">16-bit weights</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="node-k">05</div><div class="node-t">GGUF</div><div class="node-s">Q4_K_M · 1.8 GB</div></div>
+      <div class="arrow">→</div>
+      <div class="node gold"><div class="node-k">06</div><div class="node-t">Laptop</div><div class="node-s">runs on an 8 GB M2</div></div>
     </div>
   </div>
 </section>
