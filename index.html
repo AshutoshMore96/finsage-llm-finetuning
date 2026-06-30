@@ -98,12 +98,16 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between}
   .hero-stack{max-width:540px}
 }
 @media(max-width:560px){
+  .wrap{padding:0 16px}
   .hero-brand{font-size:64px}
-  .hero-metrics{grid-template-columns:repeat(2,1fr);gap:4px}
-  .hm{border-right:none;padding:9px 2px}
-  .hm-num{font-size:19px}
-  .hero-head .term{font-size:12px}
-  .hero-head .term-body{padding:18px 15px}
+  .hero-stack{max-width:100%;min-width:0;width:100%}
+  .hero-metrics{grid-template-columns:repeat(2,1fr);gap:4px;min-width:0}
+  .hm{border-right:none;padding:9px 2px;min-width:0}
+  .hm-num{font-size:18px}
+  .hero-head .term{font-size:12px;min-width:0}
+  .term-bar{flex-wrap:wrap}
+  .term-title{word-break:break-all}
+  .hero-head .term-body{padding:18px 14px}
   .topleft{top:16px;left:16px;gap:14px}
   .msgs{height:56vh}
 }
@@ -286,7 +290,7 @@ footer p{font-weight:300;font-size:13px;color:var(--text-muted)}
     <div class="hero-stack reveal">
       <div class="hero-metrics">
         <div class="hm"><div class="hm-num">3B</div><div class="hm-lbl">Parameters</div></div>
-        <div class="hm"><div class="hm-num">1.8&nbsp;GB</div><div class="hm-lbl">GGUF&nbsp;Q4_K_M</div></div>
+        <div class="hm"><div class="hm-num">1.8 GB</div><div class="hm-lbl">GGUF Q4_K_M</div></div>
         <div class="hm"><div class="hm-num">20K+</div><div class="hm-lbl">Training pairs</div></div>
         <div class="hm"><div class="hm-num">+102%</div><div class="hm-lbl">ROUGE-L gain</div></div>
       </div>
