@@ -307,13 +307,13 @@ footer p{font-weight:300;font-size:13px;color:var(--text-muted)}
 
 <script>
 /* ============ config ============
- * 'demo' = instant curated finance answers (see demoAnswer) — reliable for every
- * visitor, no backend needed. This is the production setting.
- * Other backends (a free-CPU HF Space works but is ~1–2 min/reply, too slow for a demo;
- * use only with GPU hardware):
- *   live HF Space : { type:'openai-chat', url:'https://ashutoshmore96-finsage.hf.space/chat' }
- *   local Ollama  : { type:'ollama', url:'http://localhost:11434/api/chat', model:'finsage' } */
-const FINSAGE = { type:'demo' };
+ * Live backend = the FinSage model on Modal (real GPU inference). If it's cold/slow/down,
+ * the curated demo-mode answers kick in automatically so the chat never dies.
+ * ⚠️ After `modal deploy`, paste your Modal web URL below + '/chat'
+ *    (looks like https://<user>--finsage-finsage-web.modal.run/chat).
+ * Fallbacks: {type:'demo'} for curated-only, or
+ *            {type:'ollama', url:'http://localhost:11434/api/chat', model:'finsage'} for local. */
+const FINSAGE = { type:'openai-chat', url:'https://REPLACE-WITH-YOUR-MODAL-URL.modal.run/chat' };
 
 /* warm up the HF Space on load (free Spaces sleep) so the first query is faster */
 if(FINSAGE.type==='openai-chat'){
