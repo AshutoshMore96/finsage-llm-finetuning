@@ -170,6 +170,16 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between}
 .arrow{display:flex;align-items:center;color:var(--accent-gold);font-size:18px;font-family:'JetBrains Mono'}
 @media(max-width:760px){.flow{flex-direction:column;align-items:stretch}.node{max-width:none}.arrow{transform:rotate(90deg);justify-content:center;padding:2px 0}}
 
+/* ---- models ---- */
+#models{background:var(--bg-surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.model-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:900px;margin:0 auto}
+.model-pill{display:flex;flex-direction:column;gap:8px;border:1px solid var(--border);border-radius:12px;padding:20px 18px;background:var(--bg-surface);transition:border-color .25s,transform .25s}
+.model-pill:hover{border-color:var(--accent-gold);transform:translateY(-3px)}
+.mp-name{font-family:'JetBrains Mono';font-size:14px;color:var(--accent-gold)}
+.mp-meta{font-size:11.5px;color:var(--text-secondary);font-weight:300;line-height:1.4}
+@media(max-width:780px){.model-row{grid-template-columns:1fr 1fr}}
+@media(max-width:460px){.model-row{grid-template-columns:1fr}}
+
 /* ---- results ---- */
 #results{background:var(--bg-void)}
 .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:900px;margin:0 auto}
@@ -370,6 +380,23 @@ footer p{font-weight:300;font-size:13px;color:var(--text-muted)}
         </table>
         <div class="res-note">A naïve judge favoured the base 91–9 — textbook <b class="w">verbosity + position bias</b>. After debiasing (randomised A/B order + length-neutral rubric) it collapses to a near-tie, proving the gap was an <b class="w">artifact, not quality</b>.</div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODELS -->
+<section id="models" class="pad">
+  <div class="wrap">
+    <div class="shead"><div class="eyebrow reveal">Models · Hugging Face</div></div>
+    <div class="model-row reveal">
+      <a class="model-pill" href="https://huggingface.co/AshutoshMore96/finsage-gguf" target="_blank" rel="noopener">
+        <span class="mp-name">finsage-gguf</span><span class="mp-meta">Q4_K_M · 1.8 GB · Ollama / llama.cpp</span></a>
+      <a class="model-pill" href="https://huggingface.co/AshutoshMore96/finsage-merged" target="_blank" rel="noopener">
+        <span class="mp-name">finsage-merged</span><span class="mp-meta">16-bit · MLX / vLLM / transformers</span></a>
+      <a class="model-pill" href="https://huggingface.co/AshutoshMore96/finsage-sft-adapter" target="_blank" rel="noopener">
+        <span class="mp-name">finsage-sft-adapter</span><span class="mp-meta">QLoRA SFT adapter</span></a>
+      <a class="model-pill" href="https://huggingface.co/AshutoshMore96/finsage-dpo-adapter" target="_blank" rel="noopener">
+        <span class="mp-name">finsage-dpo-adapter</span><span class="mp-meta">DPO-aligned adapter</span></a>
     </div>
   </div>
 </section>
