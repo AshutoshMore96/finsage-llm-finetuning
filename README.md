@@ -139,10 +139,6 @@ Finetuning_LLM/
 └── requirements*.txt           # training (CUDA) / mac / serve
 ```
 
-> 📚 **Deep dives:** [`docs/CONCEPTS.md`](docs/CONCEPTS.md) (every technique explained) ·
-> [`docs/PIPELINE.md`](docs/PIPELINE.md) (working analysis + timeline) ·
-> [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) (cloud hosting).
-
 ---
 
 ## 📊 Datasets (all free)
