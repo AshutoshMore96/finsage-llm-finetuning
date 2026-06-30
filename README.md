@@ -65,7 +65,7 @@ answers; the base model is verbose and occasionally fabricates structure.
 **The LLM-judge story is the interesting part.** A *naïve* judge favored the base model 91%–9% —
 a textbook case of **verbosity + position bias** (the base's long, bulleted answers read as "more
 helpful," and it was always shown first). After **debiasing the judge** (randomized A/B order +
-a length-neutral, correctness-focused rubric — see [`src/eval/evaluate.py`](src/eval/evaluate.py)),
+a length-neutral, correctness-focused rubric),
 the result collapses to a near-tie (**49% vs 46%**, fine-tuned slightly ahead). That ~40-point
 swing shows the original "base win" was **almost entirely an artifact, not quality**.
 
