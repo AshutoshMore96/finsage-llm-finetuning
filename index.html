@@ -156,6 +156,27 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between}
 .card h3{font-size:18px;font-weight:600;margin-bottom:12px}
 .card p{color:var(--text-secondary);font-size:14.5px;line-height:1.65;font-weight:300}
 .statpill{display:inline-block;margin-top:18px;font-family:'JetBrains Mono';font-size:11px;color:var(--accent-gold);background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);padding:5px 11px;border-radius:999px}
+
+/* ---- results ---- */
+#results{background:var(--bg-void)}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:900px;margin:0 auto}
+.res-card{border:1px solid var(--border);border-radius:14px;padding:30px;background:var(--bg-surface)}
+.res-label{font-family:'JetBrains Mono';font-size:12px;color:var(--text-secondary);letter-spacing:.04em;margin-bottom:24px}
+.res-row{display:grid;grid-template-columns:130px 1fr 44px;align-items:center;gap:14px;margin-bottom:14px;font-size:13px;color:var(--text-secondary)}
+.res-row b{font-family:'JetBrains Mono';color:var(--text-primary);text-align:right;font-weight:500}
+.res-row b.g,.res-note b.g{color:var(--accent-gold)}
+.res-note b.w{color:var(--text-primary)}
+.bar{height:9px;background:var(--bg-elevated);border-radius:6px;overflow:hidden}
+.fill{height:100%;background:var(--text-muted);border-radius:6px}
+.fill.gold{background:linear-gradient(90deg,var(--accent-gold),var(--accent-glow))}
+.res-note{font-size:13px;color:var(--text-secondary);line-height:1.65;margin-top:20px;font-weight:300}
+.jtable{width:100%;border-collapse:collapse;font-size:13px}
+.jtable th,.jtable td{padding:9px 4px;border-bottom:1px solid var(--border);text-align:right}
+.jtable th{color:var(--text-muted);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.jtable th:first-child,.jtable td:first-child{text-align:left;color:var(--text-secondary)}
+.jtable td{font-family:'JetBrains Mono';color:var(--text-secondary)}
+.jtable .win{color:var(--accent-gold)}
+@media(max-width:780px){.res-grid{grid-template-columns:1fr}}
 @media(max-width:860px){.cards{grid-template-columns:1fr}}
 
 /* ---- metrics ---- */
@@ -296,7 +317,29 @@ footer p{font-weight:300;font-size:13px;color:var(--text-muted)}
   </div>
 </section>
 
-
+<!-- RESULTS -->
+<section id="results" class="pad">
+  <div class="wrap">
+    <div class="shead"><div class="eyebrow reveal">Results</div></div>
+    <div class="res-grid">
+      <div class="res-card reveal">
+        <div class="res-label">ROUGE-L vs. gold answer · 300 held-out</div>
+        <div class="res-row"><span>Base Qwen2.5-3B</span><div class="bar"><div class="fill" style="width:33%"></div></div><b>0.33</b></div>
+        <div class="res-row"><span>Fine-tuned · SFT+DPO</span><div class="bar"><div class="fill gold" style="width:66%"></div></div><b class="g">0.66</b></div>
+        <div class="res-note"><b class="g">+102%</b> — fine-tuning produces concise, reference-aligned answers; the base rambles and occasionally invents structure.</div>
+      </div>
+      <div class="res-card reveal">
+        <div class="res-label">LLM-judge win-rate · base vs fine-tuned</div>
+        <table class="jtable">
+          <tr><th>Judge</th><th>Base</th><th>Fine-tuned</th></tr>
+          <tr><td>Naïve</td><td>91%</td><td>9%</td></tr>
+          <tr><td>Debiased</td><td>46%</td><td class="win">49%</td></tr>
+        </table>
+        <div class="res-note">A naïve judge favoured the base 91–9 — textbook <b class="w">verbosity + position bias</b>. After debiasing (randomised A/B order + length-neutral rubric) it collapses to a near-tie, proving the gap was an <b class="w">artifact, not quality</b>.</div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <footer><div class="wrap">
   <p>FinSage · Open Source · MIT License</p>
