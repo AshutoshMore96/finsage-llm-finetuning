@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="glow" cx="82%" cy="18%" r="65%">
+      <stop offset="0%" stop-color="#C9A84C" stop-opacity="0.14"/>
+      <stop offset="70%" stop-color="#C9A84C" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#080A0F"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- eyebrow + accent -->
+  <text x="92" y="138" font-family="Menlo, monospace" font-size="21" letter-spacing="5" fill="#C9A84C">FINANCIAL INTELLIGENCE · OPEN SOURCE</text>
+  <rect x="92" y="158" width="62" height="4" fill="#C9A84C"/>
+
+  <!-- wordmark -->
+  <text x="86" y="318" font-family="'Playfair Display', Georgia, 'Times New Roman', serif" font-size="138" font-weight="700" fill="#F0EDE8">Fin<tspan fill="#C9A84C">Sage</tspan></text>
+
+  <!-- subtitle -->
+  <text x="92" y="386" font-family="Helvetica, Arial, sans-serif" font-size="33" fill="#8A8F9E">A finance LLM — fine-tuned with QLoRA + DPO, run on a laptop.</text>
+
+  <!-- metric chips -->
+  <g font-family="Menlo, monospace" font-size="23">
+    <rect x="92"  y="440" width="190" height="52" rx="10" fill="#0E1117" stroke="#1E2535"/>
+    <text x="187" y="473" text-anchor="middle" fill="#C9A84C">Qwen2.5-3B</text>
+
+    <rect x="298" y="440" width="206" height="52" rx="10" fill="#0E1117" stroke="#1E2535"/>
+    <text x="401" y="473" text-anchor="middle" fill="#C9A84C">QLoRA + DPO</text>
+
+    <rect x="520" y="440" width="330" height="52" rx="10" fill="#0E1117" stroke="#1E2535"/>
+    <text x="685" y="473" text-anchor="middle" fill="#C9A84C">ROUGE-L 0.33 → 0.66</text>
+  </g>
+
+  <!-- footer line -->
+  <text x="92" y="572" font-family="Menlo, monospace" font-size="21" fill="#3D4154">github.com/AshutoshMore96  ·  GGUF Q4_K_M · 1.8 GB · runs on an 8 GB M2</text>
+</svg>
