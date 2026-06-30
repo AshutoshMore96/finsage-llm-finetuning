@@ -156,23 +156,5 @@ Finetuning_LLM/
 
 ---
 
-## ⚠️ Known limitations & honest notes
-
-- **Trailing sentiment tokens.** The model occasionally appends a label like `neutral` —
-  an artifact of the Sujet-Finance dataset mixing **sentiment-classification** tasks into the
-  SFT data. Mitigated at serving time with a system prompt + stop tokens; the proper fix is to
-  filter sentiment-only rows from `prepare_sft_data.py` and retrain.
-- **LLM-judge bias.** The naïve judge showed verbosity + position bias (see Results). The judge
-  is now debiased, but LLM-as-judge should always be treated with caution.
-- **3B scale.** Small model for laptop deployment — expect occasional factual slips on hard
-  numeric reasoning. See scaling note below.
-
----
-
-## 🔧 Scaling up
-Set `model.name` in `config/config.yaml` to `unsloth/Qwen2.5-7B-Instruct-bnb-4bit` for stronger
-results (still fits a free T4 via unsloth). The 7B Q4_K_M GGUF (~4.5 GB) is tight but runnable on
-an 8 GB Mac via Ollama with a small context window.
-
 ## 📜 License
 Code: MIT. Datasets and base models retain their original licenses (check each link).
