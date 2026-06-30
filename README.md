@@ -103,18 +103,6 @@ Full working analysis + timeline: [`docs/PIPELINE.md`](docs/PIPELINE.md).
 
 ---
 
-## 🧠 Why this project is portfolio-worthy
-
-1. A real problem where the base model underperforms (numeric / financial reasoning, 10-K Q&A).
-2. The complete modern stack: **PEFT (LoRA/QLoRA)**, **preference optimization (DPO)**,
-   **quantization (GGUF/MLX)**, **serving (FastAPI/Docker)**.
-3. **Rigorous before/after evaluation** + a **fine-tune vs. RAG vs. prompting** comparison.
-4. **Critical analysis, not just numbers** — debiased the LLM judge, documented a training-data
-   artifact (see [Known limitations](#️-known-limitations--honest-notes)).
-5. A working **local demo on an 8 GB laptop**, with all artifacts on the HF Hub.
-
----
-
 ## 🖥️ Hardware & where each step runs
 
 | Step | Where | Why |
