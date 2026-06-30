@@ -40,8 +40,6 @@ assistant using the **full modern fine-tuning stack** — then run it on a lapto
 | SFT LoRA adapter | [`AshutoshMore96/finsage-sft-adapter`](https://huggingface.co/AshutoshMore96/finsage-sft-adapter) | resume / inspect |
 | DPO LoRA adapter | [`AshutoshMore96/finsage-dpo-adapter`](https://huggingface.co/AshutoshMore96/finsage-dpo-adapter) | final aligned adapter |
 
-> _Set the repos to **public** on HF for these links to work for others._
-
 ### Try it in 3 commands (no training, no GPU)
 ```bash
 hf download AshutoshMore96/finsage-gguf --include "*.gguf" --local-dir ./models/gguf
