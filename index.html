@@ -540,7 +540,8 @@ async function submit(){const text=input.value.trim();if(!text||busy)return;busy
   try{
     const full=await callBackend(text);
     const secs=((performance.now()-t0)/1000).toFixed(1);
-    await typeOut(el,full.trim(),'Generated in '+secs+'s · qwen2.5-3b · gguf-q4_k_m');
+    const answer=full.trim()||"I don't have a clear answer for that one — I'm tuned for financial concepts, ratios, and calculations. Try asking about EBITDA, the P/E ratio, DCF valuation, operating margin, or a 10-K.";
+    await typeOut(el,answer,'Generated in '+secs+'s · qwen2.5-3b · fine-tuned');
   }catch(err){
     // backend unreachable (e.g. on the hosted site) -> curated offline answer
     await typeOut(el, demoAnswer(text), 'qwen2.5-3b · offline demo');
