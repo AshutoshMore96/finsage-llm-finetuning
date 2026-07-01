@@ -1,15 +1,16 @@
 """
 FinSage live demo on Modal — real GPU inference of the fine-tuned model.
 
-Loads the merged model (AshutoshMore96/finsage-merged) on a T4 and serves a
-CORS-enabled FastAPI /chat endpoint that the portfolio website calls directly.
-Scales to zero when idle (no cost), spins up on demand (~20-40s cold start).
+Pattern: a lightweight FastAPI web endpoint (CPU) that calls the GPU model class
+via .remote(). The GPU container scales to zero when idle (no cost) and spins up
+on demand (~20-40s cold start).
 
 Deploy:
     pip install modal
-    modal token new            # one-time browser auth
+    modal setup                       # one-time browser auth
     modal deploy deploy/finsage_modal.py
-    # -> copy the printed https://...modal.run URL, append /chat, put it in index.html
+    # -> copy the printed  https://<you>--finsage-web.modal.run  URL, add /chat,
+    #    put it in index.html's FINSAGE config.
 """
 import modal
 
@@ -21,36 +22,35 @@ SYSTEM = (
 
 
 def _download():
-    # bake the weights into the image so cold starts don't re-download 6GB
     from huggingface_hub import snapshot_download
     snapshot_download(MODEL)
 
 
-image = (
+# GPU image: torch + transformers + the model weights baked in
+gpu_image = (
     modal.Image.debian_slim(python_version="3.11")
-    .pip_install(
-        "torch", "transformers>=4.44", "accelerate",
-        "huggingface_hub", "fastapi", "pydantic",
-    )
+    .pip_install("torch", "transformers>=4.44", "accelerate", "huggingface_hub")
     .run_function(_download)
 )
+# tiny CPU image for the web frontend
+web_image = modal.Image.debian_slim(python_version="3.11").pip_install("fastapi", "pydantic")
 
-app = modal.App("finsage", image=image)
+app = modal.App("finsage")
 
 
-@app.cls(gpu="T4", scaledown_window=300, timeout=600)
-class FinSage:
+@app.cls(gpu="T4", image=gpu_image, scaledown_window=300, timeout=600)
+class Model:
     @modal.enter()
     def load(self):
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
         self.tok = AutoTokenizer.from_pretrained(MODEL)
         self.model = AutoModelForCausalLM.from_pretrained(
-            MODEL, torch_dtype=torch.float16,
-        ).to("cuda")
+            MODEL, torch_dtype=torch.float16).to("cuda")
         self.model.eval()
 
-    def _generate(self, message, history):
+    @modal.method()
+    def generate(self, message: str, history: list):
         import torch
         messages = [{"role": "system", "content": SYSTEM}]
         for turn in history or []:
@@ -65,38 +65,37 @@ class FinSage:
         with torch.no_grad():
             out = self.model.generate(
                 **inputs, max_new_tokens=256, do_sample=False,
-                pad_token_id=self.tok.eos_token_id,
-            )
+                pad_token_id=self.tok.eos_token_id)
         text = self.tok.decode(
             out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True).strip()
-        # trim a trailing sentiment-label artifact if present
         for junk in ("neutral", "positive", "negative"):
             if text.endswith(junk):
                 text = text[: -len(junk)].rstrip()
         return text
 
-    @modal.asgi_app()
-    def web(self):
-        from fastapi import FastAPI
-        from fastapi.middleware.cors import CORSMiddleware
-        from pydantic import BaseModel
 
-        api = FastAPI(title="FinSage (Modal)")
-        api.add_middleware(
-            CORSMiddleware, allow_origins=["*"],
-            allow_methods=["*"], allow_headers=["*"],
-        )
+@app.function(image=web_image)
+@modal.asgi_app()
+def web():
+    from fastapi import FastAPI
+    from fastapi.middleware.cors import CORSMiddleware
+    from pydantic import BaseModel
 
-        class ChatReq(BaseModel):
-            message: str
-            history: list = []
+    api = FastAPI(title="FinSage (Modal)")
+    api.add_middleware(
+        CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-        @api.get("/")
-        def root():
-            return {"service": "FinSage", "status": "ok", "model": MODEL}
+    class ChatReq(BaseModel):
+        message: str
+        history: list = []
 
-        @api.post("/chat")
-        def chat(req: ChatReq):
-            return {"answer": self._generate(req.message, req.history)}
+    @api.get("/")
+    def root():
+        return {"service": "FinSage", "status": "ok", "model": MODEL}
 
-        return api
+    @api.post("/chat")
+    def chat(req: ChatReq):
+        answer = Model().generate.remote(req.message, req.history)
+        return {"answer": answer}
+
+    return api
