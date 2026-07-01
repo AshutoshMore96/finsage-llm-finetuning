@@ -20,3 +20,7 @@ wandb/
 # local-only deep-dive docs (kept off GitHub; PIPELINE.md IS tracked)
 docs/CONCEPTS.md
 docs/DEPLOYMENT.md
+
+# local artifacts (not part of the project)
+hf-space/
+finsage_demo.cast
