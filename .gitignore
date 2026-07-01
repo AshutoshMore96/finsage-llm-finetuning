@@ -16,3 +16,6 @@ wandb/
 
 # Secrets
 .env
+
+# local-only deep-dive docs (kept off GitHub)
+docs/
