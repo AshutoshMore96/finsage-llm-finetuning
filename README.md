@@ -99,6 +99,8 @@ this project surfaces rather than hides._ (Judge: Groq `llama-3.1-8b-instant`, 3
   (chosen = gold answer, rejected = base-model answer)                         └── merged 16-bit ────────► MLX / vLLM / HF Hub
 ```
 
+Full working analysis + timeline: [`docs/PIPELINE.md`](docs/PIPELINE.md).
+
 ---
 
 ## 🖥️ Hardware & where each step runs
@@ -130,6 +132,7 @@ Finetuning_LLM/
 │   ├── compare/                # ★ fine-tune vs RAG vs prompt-engineering benchmark
 │   ├── serve/                  # FastAPI (api.py), Gradio, MLX local inference
 │   └── backup_cloud.py         # push artifacts to HF Hub / GCS (Lightning/Vast-friendly)
+├── docs/PIPELINE.md            # working analysis + timeline
 ├── tests/                      # GPU-free unit tests (pytest)  + .github/workflows/ci.yml
 ├── notebooks/colab_train.ipynb # one-click cloud training (auto-backs-up each stage)
 ├── Dockerfile, docker-compose.yml, Makefile, .env.example

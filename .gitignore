@@ -17,5 +17,6 @@ wandb/
 # Secrets
 .env
 
-# local-only deep-dive docs (kept off GitHub)
-docs/
+# local-only deep-dive docs (kept off GitHub; PIPELINE.md IS tracked)
+docs/CONCEPTS.md
+docs/DEPLOYMENT.md
