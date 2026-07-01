@@ -19,7 +19,7 @@ gradio>=4.44.0
 rouge-score>=0.1.2
 
 # RAG index build + benchmark (CPU on Mac)
-sentence-transformers>=3.0.0
+sentence-transformers>=3.0.0,<5.0
 faiss-cpu>=1.8.0
 matplotlib>=3.8.0
 

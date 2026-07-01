@@ -25,7 +25,7 @@ sentencepiece>=0.2.0
 gradio>=4.44.0
 
 # RAG baseline + comparison benchmark
-sentence-transformers>=3.0.0
+sentence-transformers>=3.0.0,<5.0
 faiss-cpu>=1.8.0
 matplotlib>=3.8.0
 
