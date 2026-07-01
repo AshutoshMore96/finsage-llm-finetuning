@@ -86,6 +86,24 @@ this project surfaces rather than hides._ (Judge: Groq `llama-3.1-8b-instant`, 3
 
 ---
 
+## 🔬 Fine-tune vs. RAG vs. Prompt-engineering
+
+Same **150 held-out** questions, five approaches (`src/compare/benchmark.py`):
+
+| Approach | ROUGE-L | Token-F1 | Latency (s) | Trains? | Corpus? |
+|----------|--------:|---------:|------------:|:-------:|:-------:|
+| Base (zero-shot) | 0.295 | 0.270 | 6.6 | No | No |
+| Prompt-engineered | 0.374 | 0.342 | 4.8 | No | No |
+| RAG (MiniLM + FAISS) | 0.160 | 0.167 | 6.5 | No | Yes |
+| **Fine-tuned (SFT+DPO)** | **0.660** | **0.648** | **1.9** | Yes | No |
+| Fine-tuned + RAG | 0.233 | 0.239 | 1.7 | Yes | Yes |
+
+**Fine-tuning wins decisively** — 2.2× the base's ROUGE-L, and the *lowest* latency (concise answers → fewer tokens to generate).
+
+**Why RAG scored low — a deliberate, instructive finding.** The eval questions are company-*anonymous* ("What were OG&A expenses as % of sales in 2022?" — no company named). The other approaches receive the row's *own* 10-K context, but RAG must **retrieve** it from a generic query — so it grounds on the *wrong* company's filing and confidently returns wrong numbers (e.g., **48.9%** vs. the correct **16.1%**). Fine-tune+RAG then follows that bad context and underperforms plain fine-tuning. This is a textbook RAG failure mode: **retrieval quality dominates, and naive RAG on ambiguous queries can be worse than none** — it would need query enrichment (company/ticker) or a reranker to compete here.
+
+---
+
 ## 🏗️ Architecture
 
 ```
