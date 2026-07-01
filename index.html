@@ -459,11 +459,14 @@ footer p{font-weight:300;font-size:13px;color:var(--text-muted)}
  *    (looks like https://<user>--finsage-finsage-web.modal.run/chat).
  * Fallbacks: {type:'demo'} for curated-only, or
  *            {type:'ollama', url:'http://localhost:11434/api/chat', model:'finsage'} for local. */
-const FINSAGE = { type:'openai-chat', url:'https://REPLACE-WITH-YOUR-MODAL-URL.modal.run/chat' };
+const FINSAGE = { type:'openai-chat', url:'https://ashutoshmore7596--finsage-web.modal.run/chat' };
 
-/* warm up the HF Space on load (free Spaces sleep) so the first query is faster */
+/* warm up the Modal GPU on load (scales to zero when idle) so the first real query is fast */
 if(FINSAGE.type==='openai-chat'){
-  try{fetch(FINSAGE.url.replace(/\/chat$/,'/'),{mode:'no-cors'}).catch(()=>{});}catch(e){}
+  try{
+    fetch(FINSAGE.url,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:'hi'})}).catch(()=>{});
+  }catch(e){}
 }
 
 /* ---- scroll progress bar ---- */
